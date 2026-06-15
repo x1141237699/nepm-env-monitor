@@ -1,0 +1,26 @@
+NEPV 环保监测大屏使用说明
+==========================
+
+## 启动
+1. 后端 back-api 运行在 http://localhost:8080
+2. 执行演示数据（首次）：
+   py back-api/scripts/import_db.py statistics-dashboard.sql
+3. 前端：
+   cd nepv
+   npm install
+   npm run dev
+
+访问：http://localhost:5175
+
+## 接口
+GET /api/statistics/dashboard
+
+返回：PM2.5/SO2/CO 各省超标统计、AQI分布、月度趋势、汇总数据
+
+## 功能
+- 公共柱状图组件 components/BarChart.vue
+- 5 秒轮询刷新
+- PM2.5 / SO2 / CO 三个柱状图复用同一组件
+
+## SQL 文件
+back-api/sql/statistics-dashboard.sql

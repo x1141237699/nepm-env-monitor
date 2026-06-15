@@ -1,0 +1,26 @@
+NEPG 网格员端使用说明
+====================
+
+## 环境要求
+Node.js 18+、back-api 后端已启动
+
+## 安装与启动
+npm install
+npm run dev
+
+访问：http://localhost:5174
+
+## 测试账号
+grid001 / 123456
+
+## 联调流程
+1. 管理员端(nepm)登录，对待指派反馈进行指派（选择李网格 grid001）
+2. 网格员端登录 grid001，在任务列表看到待检测任务
+3. 进入详情，填写 SO2、CO、PM2.5，系统自动计算 AQI 等级
+4. 提交后任务状态变为已确认
+
+## 主要接口
+POST /api/auth/grid/login          网格员登录
+GET  /api/grid/tasks               待检测任务列表
+GET  /api/grid/tasks/{afId}        任务详情
+POST /api/grid/tasks/submit        提交检测数据

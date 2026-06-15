@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shixun.nepm.mapper.SupervisorFeedbackMapper">
+    <sql id="feedbackColumns">
+        f.*, s.supervisor_name, s.phone AS supervisor_phone,
+        p.province_name, c.city_name, l.level_name, g.member_name
+    </sql>
+    <sql id="feedbackJoins">
+        FROM supervisor_feedback f
+        LEFT JOIN supervisor s ON f.supervisor_id = s.id
+        LEFT JOIN grid_province p ON f.province_id = p.id
+        LEFT JOIN grid_city c ON f.city_id = c.id
+        LEFT JOIN aqi_level l ON f.estimated_level = l.id
+        LEFT JOIN grid_member g ON f.grid_member_id = g.id
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO supervisor_feedback
+        (supervisor_id, province_id, city_id, grid_address, estimated_level, feedback_desc, feedback_images, status)
+        VALUES (#{supervisorId}, #{provinceId}, #{cityId}, #{gridAddress}, #{estimatedLevel}, #{feedbackDesc}, #{feedbackImages}, 0)
+    </insert>
+
+    <select id="findAll" resultType="SupervisorFeedback">
+        SELECT <include refid="feedbackColumns"/>
+        <include refid="feedbackJoins"/>
+        ORDER BY f.create_time DESC
+    </select>
+
+    <select id="findPage" resultType="SupervisorFeedback">
+        SELECT <include refid="feedbackColumns"/>
+        <include refid="feedbackJoins"/>
+        ORDER BY f.create_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*) FROM supervisor_feedback
+    </select>
+
+    <select id="findById" resultType="SupervisorFeedback">
+        SELECT <include refid="feedbackColumns"/>
+        <include refid="feedbackJoins"/>
+        WHERE f.id = #{id}
+    </select>
+
+    <select id="findByGridMemberId" resultType="SupervisorFeedback">
+        SELECT <include refid="feedbackColumns"/>
+        <include refid="feedbackJoins"/>
+        WHERE f.grid_member_id = #{gridMemberId}
+        ORDER BY f.create_time DESC
+    </select>
+
+    <select id="findPendingByGridMemberId" resultType="SupervisorFeedback">
+        SELECT <include refid="feedbackColumns"/>
+        <include refid="feedbackJoins"/>
+        WHERE f.grid_member_id = #{gridMemberId} AND f.status = 1
+        ORDER BY f.assign_time DESC
+    </select>
+
+    <update id="assign">
+        UPDATE supervisor_feedback
+        SET grid_member_id = #{gridMemberId}, status = 1, assign_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="confirmWithMeasure">
+        UPDATE supervisor_feedback
+        SET confirm_aqi = #{confirmAqi}, confirm_level = #{confirmLevel},
+            so2_value = #{so2}, co_value = #{co}, pm25_value = #{pm25},
+            status = 2, confirm_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="confirm">
+        UPDATE supervisor_feedback
+        SET confirm_aqi = #{confirmAqi}, confirm_level = #{confirmLevel}, status = 2, confirm_time = NOW()
+        WHERE id = #{id}
+    </update>
+</mapper>

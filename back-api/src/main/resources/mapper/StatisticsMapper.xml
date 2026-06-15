@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shixun.nepm.mapper.StatisticsMapper">
+
+    <select id="pm25ExceedByProvince" resultType="ProvinceExceedStat">
+        SELECT p.province_code AS provinceCode,
+               p.province_name AS provinceName,
+               COUNT(*)        AS exceedCount
+        FROM supervisor_feedback f
+                 JOIN grid_province p ON f.province_id = p.id
+        WHERE f.status = 2
+          AND f.pm25_value IS NOT NULL
+          AND f.pm25_value > 75
+        GROUP BY p.id, p.province_code, p.province_name
+        ORDER BY exceedCount DESC
+    </select>
+
+    <select id="so2ExceedByProvince" resultType="ProvinceExceedStat">
+        SELECT p.province_code AS provinceCode,
+               p.province_name AS provinceName,
+               COUNT(*)        AS exceedCount
+        FROM supervisor_feedback f
+                 JOIN grid_province p ON f.province_id = p.id
+        WHERE f.status = 2
+          AND f.so2_value IS NOT NULL
+          AND f.so2_value > 150
+        GROUP BY p.id, p.province_code, p.province_name
+        ORDER BY exceedCount DESC
+    </select>
+
+    <select id="coExceedByProvince" resultType="ProvinceExceedStat">
+        SELECT p.province_code AS provinceCode,
+               p.province_name AS provinceName,
+               COUNT(*)        AS exceedCount
+        FROM supervisor_feedback f
+                 JOIN grid_province p ON f.province_id = p.id
+        WHERE f.status = 2
+          AND f.co_value IS NOT NULL
+          AND f.co_value > 4
+        GROUP BY p.id, p.province_code, p.province_name
+        ORDER BY exceedCount DESC
+    </select>
+
+    <select id="aqiDistribution" resultType="AqiDistributionStat">
+        SELECT l.level_name AS levelName, COUNT(*) AS count
+        FROM supervisor_feedback f
+                 JOIN aqi_level l ON f.confirm_level = l.id
+        WHERE f.status = 2 AND f.confirm_level IS NOT NULL
+        GROUP BY l.id, l.level_name, l.min_value
+        ORDER BY l.min_value
+    </select>
+
+    <select id="monthlyTrend" resultType="MonthlyTrendStat">
+        SELECT DATE_FORMAT(f.confirm_time, '%Y-%m') AS month,
+               ROUND(AVG(f.confirm_aqi), 2)         AS avgAqi
+        FROM supervisor_feedback f
+        WHERE f.status = 2 AND f.confirm_aqi IS NOT NULL AND f.confirm_time IS NOT NULL
+        GROUP BY DATE_FORMAT(f.confirm_time, '%Y-%m')
+        ORDER BY month
+        LIMIT 12
+    </select>
+
+    <select id="feedbackSummary" resultType="map">
+        SELECT COUNT(*)                                              AS totalFeedback,
+               SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END)          AS pendingCount,
+               SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END)          AS assignedCount,
+               SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END)          AS confirmedCount,
+               ROUND(AVG(CASE WHEN status = 2 THEN confirm_aqi END), 0) AS avgAqi
+        FROM supervisor_feedback
+    </select>
+</mapper>

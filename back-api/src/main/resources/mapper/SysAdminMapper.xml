@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shixun.nepm.mapper.SysAdminMapper">
+    <select id="findByCode" resultType="SysAdmin">
+        SELECT * FROM sys_admin WHERE admin_code = #{adminCode} AND status = 1
+    </select>
+</mapper>

@@ -1,0 +1,63 @@
+东软环保公众监督系统 - 后端使用说明
+====================================
+
+一、环境要求
+------------
+JDK 8+、Maven 3.6+、MySQL 8.0
+
+二、数据库初始化
+----------------
+mysql -u root -p < sql/init.sql
+
+默认账号：
+- 管理员：admin / 123
+- 公众监督员：supervisor1 / 123456
+- 网格员：grid001 / 123456
+
+三、修改配置
+------------
+编辑 src/main/resources/application.properties 中的数据库用户名和密码
+
+四、启动后端
+------------
+IDEA 运行 com.shixun.nepm.NepmApplication
+
+或命令行：
+  mvn spring-boot:run
+
+后端地址：http://localhost:8080/api
+
+五、主要接口
+------------
+| 功能 | 方法 | URL |
+|------|------|-----|
+| 管理员登录 | POST | /api/auth/admin/login |
+| 公众监督员注册 | POST | /api/auth/supervisor/register |
+| 公众监督员登录 | POST | /api/auth/supervisor/login |
+| 公众监督员数据提交 | POST | /api/supervisor/feedback |
+| 管理员查询反馈列表 | GET | /api/admin/feedback/list |
+| 管理员指派网格员 | POST | /api/admin/feedback/assign |
+| 网格员查询指派列表 | GET | /api/grid/feedback/list?gridMemberId=1 |
+| 网格员确认AQI | POST | /api/grid/feedback/confirm |
+
+六、Postman 测试示例
+--------------------
+1. 管理员登录
+   POST http://localhost:8080/api/auth/admin/login
+   Body(JSON): {"adminCode":"admin","password":"123"}
+
+2. 公众监督员数据提交
+   POST http://localhost:8080/api/supervisor/feedback
+   Body(JSON):
+   {
+     "supervisorId": 1,
+     "provinceId": 1,
+     "cityId": 1,
+     "gridAddress": "沈阳市和平区南京街网格",
+     "estimatedLevel": 3,
+     "feedbackDesc": "该区域近期空气质量较差"
+   }
+
+七、提交前注意
+--------------
+删除 target 目录后再提交源码

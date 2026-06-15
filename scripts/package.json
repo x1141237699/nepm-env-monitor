@@ -1,0 +1,7 @@
+{
+  "name": "nepm-scripts",
+  "private": true,
+  "dependencies": {
+    "playwright": "^1.49.1"
+  }
+}

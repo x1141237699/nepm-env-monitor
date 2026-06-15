@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shixun.nepm.mapper.SupervisorMapper">
+    <select id="findByCode" resultType="Supervisor">
+        SELECT * FROM supervisor WHERE supervisor_code = #{supervisorCode} AND status = 1
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO supervisor (supervisor_code, supervisor_name, password, phone, status)
+        VALUES (#{supervisorCode}, #{supervisorName}, #{password}, #{phone}, 1)
+    </insert>
+</mapper>

@@ -1,0 +1,38 @@
+东软环保公众监督系统 - nepm 管理端使用说明
+==========================================
+
+一、环境要求
+------------
+Node.js 18+、后端 back-api 已启动
+
+二、安装依赖
+------------
+npm install
+
+三、启动开发服务器
+------------------
+npm run dev
+
+前端地址：http://localhost:5173
+
+四、登录测试
+------------
+1. 确保 back-api 运行在 http://localhost:8080
+2. 打开 http://localhost:5173
+3. 使用 admin / 123 登录
+4. 登录成功后跳转到 /feedback 反馈列表页
+
+五、项目结构
+------------
+src/
+  api/request.js    axios 封装
+  api/admin.js      管理员接口
+  stores/auth.js    登录状态管理
+  router/index.js   路由与守卫
+  pages/LoginView.vue  登录页
+  layouts/AdminLayout.vue  后台布局
+
+六、提交前注意
+--------------
+删除 node_modules 目录后再提交源码（可选）
+附登录成功截图

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shixun.nepm.mapper.GridMemberMapper">
+    <sql id="memberColumns">
+        g.*, p.province_name, c.city_name
+    </sql>
+    <sql id="memberJoins">
+        FROM grid_member g
+        LEFT JOIN grid_province p ON g.province_id = p.id
+        LEFT JOIN grid_city c ON g.city_id = c.id
+    </sql>
+
+    <select id="findByCode" resultType="GridMember">
+        SELECT <include refid="memberColumns"/>
+        <include refid="memberJoins"/>
+        WHERE g.member_code = #{memberCode} AND g.status = 1
+    </select>
+
+    <select id="findById" resultType="GridMember">
+        SELECT <include refid="memberColumns"/>
+        <include refid="memberJoins"/>
+        WHERE g.id = #{id} AND g.status = 1
+    </select>
+
+    <select id="findAll" resultType="GridMember">
+        SELECT <include refid="memberColumns"/>
+        <include refid="memberJoins"/>
+        WHERE g.status = 1
+    </select>
+
+    <select id="findByCityId" resultType="GridMember">
+        SELECT <include refid="memberColumns"/>
+        <include refid="memberJoins"/>
+        WHERE g.status = 1 AND g.city_id = #{cityId}
+    </select>
+
+    <select id="findOtherCity" resultType="GridMember">
+        SELECT <include refid="memberColumns"/>
+        <include refid="memberJoins"/>
+        WHERE g.status = 1 AND g.city_id != #{cityId}
+    </select>
+
+    <select id="countByCityId" resultType="int">
+        SELECT COUNT(*) FROM grid_member WHERE status = 1 AND city_id = #{cityId}
+    </select>
+</mapper>

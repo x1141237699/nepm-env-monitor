@@ -1,0 +1,54 @@
+erDiagram
+    grid_province ||--o{ grid_city : contains
+    grid_province ||--o{ grid_member : covers
+    grid_city ||--o{ grid_member : covers
+    supervisor ||--o{ supervisor_feedback : submits
+    grid_province ||--o{ supervisor_feedback : locates
+    grid_city ||--o{ supervisor_feedback : locates
+    aqi_level ||--o{ supervisor_feedback : estimates
+    grid_member ||--o{ supervisor_feedback : assigned
+    grid_province ||--o{ aqi_statistics : stats
+    grid_city ||--o{ aqi_statistics : stats
+
+    sys_admin {
+        int id PK
+        string admin_code
+        string admin_name
+        string password
+    }
+    supervisor {
+        int id PK
+        string supervisor_code
+        string supervisor_name
+        string password
+    }
+    grid_member {
+        int id PK
+        string member_code
+        string member_name
+        int province_id FK
+        int city_id FK
+    }
+    supervisor_feedback {
+        int id PK
+        int supervisor_id FK
+        int province_id FK
+        int city_id FK
+        string grid_address
+        int estimated_level FK
+        int grid_member_id FK
+        int status
+    }
+    aqi_level {
+        int id PK
+        string level_name
+        int min_value
+        int max_value
+    }
+    aqi_statistics {
+        int id PK
+        int province_id FK
+        int city_id FK
+        date stat_date
+        decimal avg_aqi
+    }

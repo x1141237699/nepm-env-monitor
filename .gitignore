@@ -1,0 +1,9 @@
+node_modules/
+target/
+dist/
+.idea/
+*.iml
+.vite/
+.env
+*.log
+.DS_Store
