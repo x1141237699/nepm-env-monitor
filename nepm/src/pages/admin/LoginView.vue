@@ -23,7 +23,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '../../stores/auth'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()
@@ -47,9 +47,7 @@ async function handleLogin() {
   try {
     await authStore.login(form.adminCode, form.password)
     ElMessage.success('登录成功')
-    router.push('/feedback')
-  } catch (e) {
-    // error handled by interceptor
+    router.push('/admin/feedback')
   } finally {
     loading.value = false
   }

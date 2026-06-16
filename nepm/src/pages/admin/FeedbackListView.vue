@@ -38,7 +38,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { getFeedbackPage } from '../api/admin'
+import { getFeedbackPage } from '../../api/admin'
 
 const router = useRouter()
 const loading = ref(false)
@@ -70,7 +70,7 @@ async function fetchData() {
 }
 
 function goDetail(afId) {
-  router.push(`/feedback/${afId}`)
+  router.push(`/admin/feedback/${afId}`)
 }
 
 onMounted(() => {

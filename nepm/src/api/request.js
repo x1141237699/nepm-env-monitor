@@ -6,10 +6,19 @@ const request = axios.create({
   timeout: 10000,
 })
 
+function resolveToken(role) {
+  if (role === 'grid') return localStorage.getItem('gridToken')
+  if (role === 'supervisor') return localStorage.getItem('supervisorToken')
+  return localStorage.getItem('adminToken')
+}
+
 request.interceptors.request.use((config) => {
-  const token = localStorage.getItem('adminToken')
+  const role = config.meta?.authRole || 'admin'
+  const token = resolveToken(role)
   if (token) {
-    config.headers.adminToken = token
+    if (role === 'grid') config.headers.gridToken = token
+    else if (role === 'supervisor') config.headers.supervisorToken = token
+    else config.headers.adminToken = token
   }
   return config
 })
