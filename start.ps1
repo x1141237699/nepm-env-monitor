@@ -1,10 +1,9 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-  东软环保公众监督系统 - 一键启动前后端
+  NEPM - start backend and frontend
 .USAGE
   powershell -ExecutionPolicy Bypass -File .\start.ps1
-  或双击 start.bat
 #>
 
 $ErrorActionPreference = "Stop"
@@ -64,72 +63,76 @@ function Save-Pids($backendPid, $frontendPid) {
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Magenta
-Write-Host " 东软环保公众监督系统 - 一键启动" -ForegroundColor Magenta
+Write-Host " NEPM - Start Backend and Frontend" -ForegroundColor Magenta
 Write-Host "========================================" -ForegroundColor Magenta
 Write-Host ""
 
-# 环境检查
 $missing = @()
-if (-not (Test-CommandExists "java")) { $missing += "JDK 8+（java 命令）" }
-if (-not (Test-CommandExists "node")) { $missing += "Node.js 18+（node 命令）" }
-if (-not (Test-CommandExists "npm")) { $missing += "npm（随 Node.js 安装）" }
+if (-not (Test-CommandExists "java")) { $missing += "JDK 8+ (java)" }
+if (-not (Test-CommandExists "node")) { $missing += "Node.js 18+ (node)" }
+if (-not (Test-CommandExists "npm")) { $missing += "npm" }
 $mvn = Find-Maven
-if (-not $mvn) { $missing += "Maven 3.6+（mvn 命令）" }
+if (-not $mvn) { $missing += "Maven 3.6+ (mvn)" }
 
 if ($missing.Count -gt 0) {
-  Write-Warn "缺少以下环境，请先安装："
+  Write-Warn "Missing dependencies:"
   $missing | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
   exit 1
 }
 
 if (Test-PortListening 8080) {
-  Write-Warn "端口 8080 已被占用，请先运行 stop.ps1 或手动结束进程"
+  Write-Warn "Port 8080 is in use. Run stop.ps1 first."
   exit 1
 }
 if (Test-PortListening 5173) {
-  Write-Warn "端口 5173 已被占用，请先运行 stop.ps1 或手动结束进程"
+  Write-Warn "Port 5173 is in use. Run stop.ps1 first."
   exit 1
 }
 
-# 前端依赖
 if (-not (Test-Path (Join-Path $NepmDir "node_modules"))) {
-  Write-Info "首次运行，正在安装前端依赖 (npm install)..."
+  Write-Info "Running npm install..."
   Push-Location $NepmDir
   npm install
-  if ($LASTEXITCODE -ne 0) { Pop-Location; throw "npm install 失败" }
+  if ($LASTEXITCODE -ne 0) { Pop-Location; throw "npm install failed" }
   Pop-Location
-  Write-Ok "前端依赖安装完成"
+  Write-Ok "npm install done"
 }
 
-# 启动后端
-Write-Info "正在启动后端 (8080)..."
+Write-Info "Starting backend on 8080..."
 $backendProc = Start-Process -FilePath $mvn -ArgumentList "spring-boot:run" -WorkingDirectory $BackApiDir -PassThru -WindowStyle Minimized
-Write-Ok "后端进程已启动 (PID $($backendProc.Id))"
+Write-Ok "Backend started (PID $($backendProc.Id))"
 
-Write-Info "等待后端就绪..."
+Write-Info "Waiting for backend..."
 if (Wait-ForUrl "http://localhost:8080/api/statistics/dashboard" 120) {
-  Write-Ok "后端已就绪: http://localhost:8080/api"
+  Write-Ok "Backend ready: http://localhost:8080/api"
 } else {
-  Write-Warn "后端启动超时，请检查 MySQL 是否运行、数据库是否已初始化"
+  Write-Warn "Backend timeout. Check MySQL and database init."
 }
 
-# 启动前端
-Write-Info "正在启动前端 (5173)..."
-$frontendProc = Start-Process -FilePath "npm" -ArgumentList "run", "dev" -WorkingDirectory $NepmDir -PassThru -WindowStyle Minimized
-Write-Ok "前端进程已启动 (PID $($frontendProc.Id))"
+$viteCmd = Join-Path $NepmDir "node_modules\.bin\vite.cmd"
+if (-not (Test-Path $viteCmd)) { $viteCmd = "npx" }
+$viteArgs = if ($viteCmd -eq "npx") { @("vite") } else { @() }
 
-Write-Info "等待前端就绪..."
-if (Wait-ForUrl "http://localhost:5173" 60) {
-  Write-Ok "前端已就绪: http://localhost:5173"
+Write-Info "Starting frontend on 5173..."
+if ($viteCmd -eq "npx") {
+  $frontendProc = Start-Process -FilePath "npm" -ArgumentList "exec", "vite" -WorkingDirectory $NepmDir -PassThru -WindowStyle Minimized
 } else {
-  Write-Warn "前端启动较慢，请稍后手动访问 http://localhost:5173"
+  $frontendProc = Start-Process -FilePath $viteCmd -WorkingDirectory $NepmDir -PassThru -WindowStyle Minimized
+}
+Write-Ok "Frontend started (PID $($frontendProc.Id))"
+
+Write-Info "Waiting for frontend..."
+if (Wait-ForUrl "http://localhost:5173" 60) {
+  Write-Ok "Frontend ready: http://localhost:5173"
+} else {
+  Write-Warn "Frontend slow. Try http://localhost:5173 later."
 }
 
 Save-Pids $backendProc.Id $frontendProc.Id
 
 Write-Host ""
-Write-Host "启动完成！" -ForegroundColor Green
-Write-Host "  前端: http://localhost:5173"
-Write-Host "  后端: http://localhost:8080/api"
-Write-Host "  停止: 运行 stop.ps1 或 stop.bat"
+Write-Host "Done!" -ForegroundColor Green
+Write-Host "  Frontend: http://localhost:5173"
+Write-Host "  Backend:  http://localhost:8080/api"
+Write-Host "  Stop:     stop.ps1 / stop.bat"
 Write-Host ""

@@ -1,10 +1,9 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-  东软环保公众监督系统 - 停止前后端
+  NEPM - stop backend and frontend
 .USAGE
   powershell -ExecutionPolicy Bypass -File .\stop.ps1
-  或双击 stop.bat
 #>
 
 $Root = $PSScriptRoot
@@ -16,26 +15,26 @@ function Write-Ok($msg) { Write-Host "[OK]   $msg" -ForegroundColor Green }
 function Stop-ByPort($port) {
   $conns = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue
   foreach ($conn in $conns) {
-    $pid = $conn.OwningProcess
-    if ($pid -and $pid -ne 0) {
-      $proc = Get-Process -Id $pid -ErrorAction SilentlyContinue
+    $procId = $conn.OwningProcess
+    if ($procId -and $procId -ne 0) {
+      $proc = Get-Process -Id $procId -ErrorAction SilentlyContinue
       if ($proc) {
-        Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
-        Write-Ok "已停止端口 $port 的进程 (PID $pid, $($proc.ProcessName))"
+        Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue
+        Write-Ok "Stopped port $port (PID $procId, $($proc.ProcessName))"
       }
     }
   }
 }
 
-function Stop-Tree($pid) {
-  if (-not $pid) { return }
-  Get-CimInstance Win32_Process -Filter "ParentProcessId=$pid" -ErrorAction SilentlyContinue |
+function Stop-Tree($procId) {
+  if (-not $procId) { return }
+  Get-CimInstance Win32_Process -Filter "ParentProcessId=$procId" -ErrorAction SilentlyContinue |
     ForEach-Object { Stop-Tree $_.ProcessId }
-  Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
+  Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue
 }
 
 Write-Host ""
-Write-Host "正在停止项目..." -ForegroundColor Magenta
+Write-Host "Stopping project..." -ForegroundColor Magenta
 Write-Host ""
 
 if (Test-Path $PidFile) {
@@ -43,15 +42,15 @@ if (Test-Path $PidFile) {
     $pids = Get-Content $PidFile -Raw | ConvertFrom-Json
     if ($pids.backendPid) {
       Stop-Tree $pids.backendPid
-      Write-Ok "已停止后端进程 (PID $($pids.backendPid))"
+      Write-Ok "Stopped backend (PID $($pids.backendPid))"
     }
     if ($pids.frontendPid) {
       Stop-Tree $pids.frontendPid
-      Write-Ok "已停止前端进程 (PID $($pids.frontendPid))"
+      Write-Ok "Stopped frontend (PID $($pids.frontendPid))"
     }
     Remove-Item $PidFile -Force
   } catch {
-    Write-Info "PID 文件读取失败，改为按端口停止"
+    Write-Info "PID file invalid, stopping by port"
   }
 }
 
@@ -59,5 +58,5 @@ Stop-ByPort 8080
 Stop-ByPort 5173
 
 Write-Host ""
-Write-Host "项目已停止。" -ForegroundColor Green
+Write-Host "Project stopped." -ForegroundColor Green
 Write-Host ""
