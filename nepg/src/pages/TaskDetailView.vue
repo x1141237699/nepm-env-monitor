@@ -2,7 +2,7 @@
   <div class="page">
     <van-nav-bar title="任务详情" left-arrow fixed placeholder @click-left="router.back()" />
 
-    <van-cell-group v-if="task" inset title="任务信息">
+    <van-cell-group v-if="task" inset title="任务信息" class="info-group">
       <van-cell title="网格地址" :value="task.gridAddress" />
       <van-cell title="所属城市" :value="task.cityName" />
       <van-cell title="监督员" :value="task.supervisorName" />
@@ -11,7 +11,7 @@
     </van-cell-group>
 
     <van-form v-if="task && task.status === 1" @submit="onSubmit">
-      <van-cell-group inset title="实测数据录入">
+      <van-cell-group inset title="实测数据录入" class="form-group">
         <van-field
           v-model="form.so2"
           type="number"
@@ -38,14 +38,14 @@
         />
       </van-cell-group>
 
-      <van-cell-group v-if="result" inset title="自动计算结果">
+      <van-cell-group v-if="result" inset title="自动计算结果" class="result-group">
         <van-cell title="SO2等级" :value="result.so2Level" />
         <van-cell title="CO等级" :value="result.coLevel" />
         <van-cell title="PM2.5等级" :value="result.pm25Level" />
         <van-cell title="综合AQI" :value="String(result.aqi)" />
         <van-cell title="AQI等级">
           <template #value>
-            <van-tag type="primary">{{ result.levelName }}</van-tag>
+            <van-tag color="#2d8f6f" text-color="#fff">{{ result.levelName }}</van-tag>
           </template>
         </van-cell>
       </van-cell-group>
@@ -57,7 +57,7 @@
       </div>
     </van-form>
 
-    <van-cell-group v-else-if="task && task.status === 2" inset title="已提交">
+    <van-cell-group v-else-if="task && task.status === 2" inset title="已提交" class="info-group">
       <van-cell title="确认AQI" :value="String(task.confirmAqi)" />
       <van-cell title="SO2" :value="String(task.so2Value ?? '-')" />
       <van-cell title="CO" :value="String(task.coValue ?? '-')" />
@@ -125,6 +125,16 @@ watch(() => route.params.afId, loadTask)
 </script>
 
 <style scoped>
-.page { min-height: 100vh; padding-bottom: 24px; }
+.page {
+  min-height: 100vh;
+  padding-bottom: 24px;
+  background: var(--color-page-bg, #f4f9f6);
+}
+.info-group,
+.form-group,
+.result-group {
+  border: 1px solid var(--color-card-border, #c5d4a8);
+  margin-top: 12px;
+}
 .submit-btn { margin: 24px 16px; }
 </style>

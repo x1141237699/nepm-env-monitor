@@ -1,7 +1,7 @@
 <template>
-  <el-card shadow="never">
+  <el-card shadow="never" class="page-card">
     <template #header>
-      <span>公众监督反馈列表</span>
+      <span class="card-title">公众监督反馈列表</span>
     </template>
     <el-table v-loading="loading" :data="tableData" stripe border>
       <el-table-column prop="id" label="编号" width="80" />
@@ -79,6 +79,25 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.page-card {
+  border: 1px solid var(--color-card-border, #c5d4a8);
+  border-radius: 8px;
+}
+.page-card :deep(.el-card__header) {
+  border-left: 4px solid var(--color-primary, #2d8f6f);
+  background: rgba(225, 232, 207, 0.35);
+}
+.card-title {
+  color: var(--color-primary, #2d8f6f);
+  font-weight: 600;
+}
+.page-card :deep(.el-table th) {
+  background: rgba(225, 232, 207, 0.5) !important;
+  color: #2c3e2c;
+}
+.page-card :deep(.el-table--striped .el-table__body tr.el-table__row--striped td) {
+  background: rgba(244, 249, 246, 0.8);
+}
 .pagination {
   display: flex;
   justify-content: flex-end;

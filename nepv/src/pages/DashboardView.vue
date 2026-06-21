@@ -41,7 +41,7 @@
             title="PM2.5 累计超标次数"
             :x-data="pm25X"
             :y-data="pm25Y"
-            color="#4facfe"
+            color="#52b788"
           />
         </div>
         <div class="panel-box chart-wrap">
@@ -49,7 +49,7 @@
             title="SO2 累计超标次数"
             :x-data="so2X"
             :y-data="so2Y"
-            color="#43e97b"
+            color="#7ec8a0"
           />
         </div>
         <div class="panel-box chart-wrap">
@@ -57,7 +57,7 @@
             title="CO 累计超标次数"
             :x-data="coX"
             :y-data="coY"
-            color="#fa709a"
+            color="#2d8f6f"
           />
         </div>
       </section>
@@ -130,15 +130,15 @@ function renderMapChart() {
     xAxis: {
       type: 'value',
       name: '超标次数',
-      nameTextStyle: { color: '#9ecbff' },
-      axisLabel: { color: '#9ecbff' },
-      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.08)' } },
+      nameTextStyle: { color: '#a8dbbe' },
+      axisLabel: { color: '#a8dbbe' },
+      splitLine: { lineStyle: { color: 'rgba(82, 183, 136, 0.12)' } },
     },
     yAxis: {
       type: 'category',
       data: list.map((i) => i.provinceName),
-      axisLabel: { color: '#cde7ff', fontSize: 13 },
-      axisLine: { lineStyle: { color: '#3a6ea5' } },
+      axisLabel: { color: '#c0e6d0', fontSize: 13 },
+      axisLine: { lineStyle: { color: '#2d8f6f' } },
     },
     series: [{
       type: 'bar',
@@ -149,8 +149,8 @@ function renderMapChart() {
           type: 'linear',
           x: 0, y: 0, x2: 1, y2: 0,
           colorStops: [
-            { offset: 0, color: '#1a6fb5' },
-            { offset: 1, color: '#4facfe' },
+            { offset: 0, color: '#1a5c40' },
+            { offset: 1, color: '#52b788' },
           ],
         },
         borderRadius: [0, 4, 4, 0],
@@ -158,7 +158,7 @@ function renderMapChart() {
       label: {
         show: true,
         position: 'right',
-        color: '#7ec8ff',
+        color: '#7ec8a0',
         formatter: '{c} 次',
       },
     }],
@@ -172,7 +172,7 @@ function renderSideCharts() {
   gauge1Chart?.setOption({
     series: [{
       type: 'gauge', min: 0, max: 300,
-      axisLine: { lineStyle: { width: 8, color: [[0.3, '#67e0e3'], [0.7, '#37a2da'], [1, '#fd666d']] } },
+      axisLine: { lineStyle: { width: 8, color: [[0.3, '#52b788'], [0.7, '#2d8f6f'], [1, '#e6a23c']] } },
       detail: { formatter: '{value}', color: '#fff' },
       data: [{ value: avgAqi, name: 'AQI' }],
     }],
@@ -181,29 +181,29 @@ function renderSideCharts() {
   gauge2Chart?.setOption({
     series: [{
       type: 'gauge', min: 0, max: Math.max(pending * 2, 10),
-      axisLine: { lineStyle: { width: 8, color: [[1, '#e6a23c']] } },
+      axisLine: { lineStyle: { width: 8, color: [[1, '#52b788']] } },
       detail: { formatter: '{value}', color: '#fff' },
       data: [{ value: pending, name: '待处理' }],
     }],
   })
 
   pieChart?.setOption({
-    title: { text: 'AQI 等级分布', left: 'center', textStyle: { color: '#fff', fontSize: 14 } },
+    title: { text: 'AQI 等级分布', left: 'center', textStyle: { color: '#c0e6d0', fontSize: 14 } },
     tooltip: { trigger: 'item' },
     series: [{
       type: 'pie', radius: ['35%', '60%'],
       data: aqiDistribution.value.map((i) => ({ name: i.levelName, value: i.count })),
-      label: { color: '#cde7ff' },
+      label: { color: '#c0e6d0' },
     }],
   })
 
   lineChart?.setOption({
-    title: { text: '近12月空气质量趋势', left: 'center', textStyle: { color: '#fff', fontSize: 14 } },
+    title: { text: '近12月空气质量趋势', left: 'center', textStyle: { color: '#c0e6d0', fontSize: 14 } },
     tooltip: { trigger: 'axis' },
     grid: { left: 40, right: 20, top: 40, bottom: 30 },
-    xAxis: { type: 'category', data: monthlyTrend.value.map((i) => i.month), axisLabel: { color: '#9ecbff' } },
-    yAxis: { type: 'value', axisLabel: { color: '#9ecbff' }, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.08)' } } },
-    series: [{ type: 'line', smooth: true, data: monthlyTrend.value.map((i) => i.avgAqi), areaStyle: { opacity: 0.15 }, itemStyle: { color: '#4facfe' } }],
+    xAxis: { type: 'category', data: monthlyTrend.value.map((i) => i.month), axisLabel: { color: '#a8dbbe' } },
+    yAxis: { type: 'value', axisLabel: { color: '#a8dbbe' }, splitLine: { lineStyle: { color: 'rgba(82, 183, 136, 0.12)' } } },
+    series: [{ type: 'line', smooth: true, data: monthlyTrend.value.map((i) => i.avgAqi), areaStyle: { opacity: 0.15, color: '#52b788' }, itemStyle: { color: '#52b788' } }],
   })
 }
 
@@ -244,7 +244,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .dashboard {
   min-height: 100vh;
-  background: radial-gradient(circle at top, #0b2a4a 0%, #061526 55%, #030b16 100%);
+  background: radial-gradient(circle at top, #0a2e1f 0%, #061a12 55%, #030f0a 100%);
   color: #fff;
   padding: 16px;
 }
@@ -253,8 +253,8 @@ onBeforeUnmount(() => {
   font-size: 28px;
   letter-spacing: 4px;
   margin-bottom: 16px;
-  color: #7ec8ff;
-  text-shadow: 0 0 12px rgba(79, 172, 254, 0.6);
+  color: #7ec8a0;
+  text-shadow: 0 0 12px rgba(82, 183, 136, 0.6);
 }
 .content {
   display: grid;
@@ -268,8 +268,8 @@ onBeforeUnmount(() => {
   gap: 12px;
 }
 .panel-box {
-  background: rgba(8, 35, 70, 0.75);
-  border: 1px solid rgba(79, 172, 254, 0.25);
+  background: rgba(10, 46, 31, 0.75);
+  border: 1px solid rgba(82, 183, 136, 0.3);
   border-radius: 8px;
   padding: 8px;
   flex: 1;
@@ -285,7 +285,7 @@ onBeforeUnmount(() => {
 .gauge-item p {
   margin-top: -8px;
   font-size: 12px;
-  color: #9ecbff;
+  color: #a8dbbe;
 }
 .mini-chart, .chart-block {
   width: 100%;
@@ -298,8 +298,8 @@ onBeforeUnmount(() => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: rgba(8, 35, 70, 0.75);
-  border: 1px solid rgba(79, 172, 254, 0.25);
+  background: rgba(10, 46, 31, 0.75);
+  border: 1px solid rgba(82, 183, 136, 0.3);
   border-radius: 8px;
   padding: 16px;
 }
@@ -307,7 +307,7 @@ onBeforeUnmount(() => {
   text-align: center;
   margin-bottom: 8px;
   flex-shrink: 0;
-  color: #7ec8ff;
+  color: #7ec8a0;
 }
 .map-chart {
   flex: 1;
@@ -319,13 +319,13 @@ onBeforeUnmount(() => {
   justify-content: space-around;
   align-items: center;
   padding: 12px;
-  background: rgba(8, 35, 70, 0.75);
-  border: 1px solid rgba(79, 172, 254, 0.25);
+  background: rgba(10, 46, 31, 0.75);
+  border: 1px solid rgba(82, 183, 136, 0.3);
   border-radius: 8px;
   font-size: 14px;
 }
 .refresh-tip {
-  color: #67c23a;
+  color: #52b788;
   font-size: 12px;
 }
 </style>

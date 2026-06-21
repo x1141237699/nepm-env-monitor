@@ -1,8 +1,8 @@
 <template>
-  <el-card v-loading="loading" shadow="never">
+  <el-card v-loading="loading" shadow="never" class="page-card">
     <template #header>
       <div class="header">
-        <span>反馈详情</span>
+        <span class="card-title">反馈详情</span>
         <el-button @click="router.back()">返回</el-button>
       </div>
     </template>
@@ -187,6 +187,22 @@ watch(() => route.params.afId, fetchDetail)
 </script>
 
 <style scoped>
+.page-card {
+  border: 1px solid var(--color-card-border, #c5d4a8);
+  border-radius: 8px;
+}
+.page-card :deep(.el-card__header) {
+  border-left: 4px solid var(--color-primary, #2d8f6f);
+  background: rgba(225, 232, 207, 0.35);
+}
+.card-title {
+  color: var(--color-primary, #2d8f6f);
+  font-weight: 600;
+}
+.page-card :deep(.el-descriptions__label) {
+  background: rgba(225, 232, 207, 0.4) !important;
+  color: #2c3e2c;
+}
 .header {
   display: flex;
   align-items: center;
@@ -194,6 +210,8 @@ watch(() => route.params.afId, fetchDetail)
 }
 .assign-section {
   margin-top: 24px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--color-card-border, #c5d4a8);
 }
 .tip {
   margin-bottom: 16px;

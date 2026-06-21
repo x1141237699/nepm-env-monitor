@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <van-nav-bar title="待检测任务" fixed placeholder>
+    <van-nav-bar title="待检测任务" fixed placeholder class="nav-bar">
       <template #right>
         <span class="logout" @click="logout">退出</span>
       </template>
@@ -12,12 +12,13 @@
         v-for="item in tasks"
         :key="item.id"
         is-link
+        class="task-cell"
         :title="item.gridAddress"
         :label="`${item.cityName || ''} | 预估：${item.levelName || '-'}`"
         @click="goDetail(item.id)"
       >
         <template #value>
-          <van-tag type="warning">待检测</van-tag>
+          <van-tag color="#2d8f6f" text-color="#fff">待检测</van-tag>
         </template>
       </van-cell>
     </van-pull-refresh>
@@ -64,6 +65,19 @@ onMounted(loadTasks)
 </script>
 
 <style scoped>
-.page { min-height: 100vh; }
-.logout { color: #1989fa; font-size: 14px; }
+.page {
+  min-height: 100vh;
+  background: var(--color-page-bg, #f4f9f6);
+}
+.logout {
+  color: #fff;
+  font-size: 14px;
+  opacity: 0.95;
+}
+.task-cell {
+  margin-bottom: 2px;
+}
+.task-cell :deep(.van-cell__title) {
+  color: #2c3e2c;
+}
 </style>

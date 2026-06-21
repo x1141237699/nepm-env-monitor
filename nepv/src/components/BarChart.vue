@@ -10,7 +10,7 @@ const props = defineProps({
   title: { type: String, default: '' },
   xData: { type: Array, default: () => [] },
   yData: { type: Array, default: () => [] },
-  color: { type: String, default: '#409EFF' },
+  color: { type: String, default: '#52b788' },
   yAxisName: { type: String, default: '超标次数' },
 })
 
@@ -23,7 +23,7 @@ function renderChart() {
     title: {
       text: props.title,
       left: 'center',
-      textStyle: { color: '#fff', fontSize: 14 },
+      textStyle: { color: '#c0e6d0', fontSize: 14 },
     },
     grid: { left: 40, right: 20, top: 40, bottom: 30 },
     tooltip: { trigger: 'axis' },
@@ -31,15 +31,15 @@ function renderChart() {
     xAxis: {
       type: 'category',
       data: props.xData,
-      axisLabel: { color: '#9ecbff', fontSize: 11 },
-      axisLine: { lineStyle: { color: '#3a6ea5' } },
+      axisLabel: { color: '#a8dbbe', fontSize: 11 },
+      axisLine: { lineStyle: { color: '#2d8f6f' } },
     },
     yAxis: {
       type: 'value',
       name: props.yAxisName,
-      nameTextStyle: { color: '#9ecbff' },
-      axisLabel: { color: '#9ecbff' },
-      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.08)' } },
+      nameTextStyle: { color: '#a8dbbe' },
+      axisLabel: { color: '#a8dbbe' },
+      splitLine: { lineStyle: { color: 'rgba(82, 183, 136, 0.12)' } },
     },
     series: [{
       type: 'bar',

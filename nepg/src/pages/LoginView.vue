@@ -5,7 +5,7 @@
       <p>东软环保公众监督系统</p>
     </div>
     <van-form @submit="onSubmit">
-      <van-cell-group inset>
+      <van-cell-group inset class="form-group">
         <van-field
           v-model="form.memberCode"
           name="memberCode"
@@ -56,9 +56,22 @@ async function onSubmit() {
 </script>
 
 <style scoped>
-.login-page { min-height: 100vh; padding: 48px 16px; background: linear-gradient(180deg, #1989fa 0%, #f7f8fa 40%); }
-.login-header { text-align: center; color: #fff; margin-bottom: 32px; }
+.login-page {
+  min-height: 100vh;
+  padding: 48px 16px;
+  background: linear-gradient(180deg, #43cea2 0%, #2d6a4f 35%, #f4f9f6 55%);
+}
+.login-header {
+  text-align: center;
+  color: #fff;
+  margin-bottom: 32px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
 .login-header h2 { font-size: 24px; margin-bottom: 8px; }
-.login-header p { font-size: 14px; opacity: 0.9; }
+.login-header p { font-size: 14px; opacity: 0.95; }
+.form-group {
+  border: 1px solid var(--color-card-border, #c5d4a8);
+  overflow: hidden;
+}
 .login-btn { margin: 24px 16px; }
 </style>
