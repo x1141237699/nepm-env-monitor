@@ -23,4 +23,12 @@ public class SupervisorController {
         feedbackService.submitFeedback(feedback);
         return Result.success(feedback);
     }
+
+    @GetMapping("/feedback/list")
+    public Result<java.util.List<SupervisorFeedback>> listFeedback(@RequestParam Integer supervisorId) {
+        if (supervisorId == null) {
+            return Result.error(400, "supervisorId不能为空");
+        }
+        return Result.success(feedbackService.listBySupervisor(supervisorId));
+    }
 }

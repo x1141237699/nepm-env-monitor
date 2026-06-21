@@ -1,0 +1,33 @@
+NEPS 公众监督员端使用说明
+========================
+
+## 环境要求
+Node.js 18+、back-api 后端已启动
+
+## 安装与启动
+npm install
+npm run dev
+
+访问：http://localhost:5176
+
+## 测试账号
+supervisor1 / 123456
+
+## 功能流程
+1. 登录或注册公众监督员账号
+2. 在「我的反馈」页点击「提交反馈」
+3. 选择省份、城市及网格地址
+4. 填写预估 AQI 级别与反馈描述，提交
+5. 返回「我的反馈」查看记录及处理状态（待指派/已指派/已确认）
+
+## 主要接口
+POST /api/auth/supervisor/login       监督员登录
+POST /api/auth/supervisor/register    监督员注册
+GET  /api/common/provinces            省份列表
+GET  /api/common/cities               城市列表
+GET  /api/common/aqi-levels           AQI 级别列表
+POST /api/supervisor/feedback         提交反馈
+GET  /api/supervisor/feedback/list    我的反馈列表
+
+## 联调说明
+提交反馈后，管理员端(nepm)可在反馈列表中看到新记录并进行指派。

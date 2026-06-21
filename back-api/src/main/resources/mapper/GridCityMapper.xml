@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shixun.nepm.mapper.GridCityMapper">
+    <select id="findByProvinceId" resultType="GridCity">
+        SELECT id, province_id, city_name, city_code, create_time
+        FROM grid_city
+        WHERE province_id = #{provinceId}
+        ORDER BY id
+    </select>
+</mapper>

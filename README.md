@@ -7,9 +7,10 @@
 ├── nepm/              Vue3 管理员端（5173）
 ├── nepg/              Vue3 网格员端（5174）
 ├── nepv/              Vue3 监测大屏（5175）
+├── neps/              Vue3 公众监督员端（5176）
 ├── docs/              作业文档与图片
 ├── scripts/           文档与图片生成脚本
-├── start.ps1 / start.bat   一键启动后端 + 三个前端
+├── start.ps1 / start.bat   一键启动后端 + 四个前端
 └── stop.ps1 / stop.bat     一键停止
 ```
 
@@ -59,7 +60,7 @@ py back-api/scripts/import_db.py statistics-dashboard.sql
 ## 一键启动 / 停止
 
 ```powershell
-# 启动（后端 + nepm + nepg + nepv）
+# 启动（后端 + nepm + nepg + nepv + neps）
 start.bat
 # 或
 powershell -ExecutionPolicy Bypass -File .\start.ps1
@@ -77,6 +78,7 @@ powershell -ExecutionPolicy Bypass -File .\stop.ps1
 | 管理员端 nepm | 5173 | http://localhost:5173 |
 | 网格员端 nepg | 5174 | http://localhost:5174 |
 | 监测大屏 nepv | 5175 | http://localhost:5175 |
+| 公众监督员端 neps | 5176 | http://localhost:5176 |
 | 后端 API | 8080 | http://localhost:8080/api |
 
 ## 手动启动（可选）
@@ -93,6 +95,9 @@ cd nepg && npm install && npm run dev
 
 # 监测大屏
 cd nepv && npm install && npm run dev
+
+# 公众监督员端
+cd neps && npm install && npm run dev
 ```
 
 ## 生成文档与图片
@@ -111,5 +116,5 @@ node export_prototypes.js
 - [ ] docs/03-流程图/ 5 张流程图
 - [ ] 3 份 .docx 文档
 - [ ] back-api 源码（删除 target/）
-- [ ] nepm/nepg/nepv 源码（删除 node_modules/）
+- [ ] nepm/nepg/nepv/neps 源码（删除 node_modules/）
 - [ ] 运行截图

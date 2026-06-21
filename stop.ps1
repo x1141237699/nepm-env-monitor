@@ -64,6 +64,8 @@ Stop-ByPort 8080
 Stop-ByPort 5173
 Stop-ByPort 5174
 Stop-ByPort 5175
+Stop-ByPort 5176
+Stop-ByPort 5177
 
 Write-Host ""
 Write-Host "Project stopped." -ForegroundColor Green

@@ -14,7 +14,8 @@ $PidFile = Join-Path $Root ".run\pids.json"
 $Frontends = @(
   @{ Name = "nepm"; Dir = (Join-Path $Root "nepm"); Port = 5173 },
   @{ Name = "nepg"; Dir = (Join-Path $Root "nepg"); Port = 5174 },
-  @{ Name = "nepv"; Dir = (Join-Path $Root "nepv"); Port = 5175 }
+  @{ Name = "nepv"; Dir = (Join-Path $Root "nepv"); Port = 5175 },
+  @{ Name = "neps"; Dir = (Join-Path $Root "neps"); Port = 5176 }
 )
 
 function Write-Info($msg) { Write-Host "[INFO] $msg" -ForegroundColor Cyan }
@@ -67,10 +68,11 @@ function Ensure-NpmInstall($dir, $name) {
 
 function Start-Frontend($dir, $port) {
   $viteCmd = Join-Path $dir "node_modules\.bin\vite.cmd"
+  $viteArgs = @("--port", $port, "--strictPort", "--host", "127.0.0.1")
   if (Test-Path $viteCmd) {
-    return Start-Process -FilePath $viteCmd -WorkingDirectory $dir -PassThru -WindowStyle Minimized
+    return Start-Process -FilePath $viteCmd -ArgumentList $viteArgs -WorkingDirectory $dir -PassThru -WindowStyle Minimized
   }
-  return Start-Process -FilePath "npm" -ArgumentList "exec", "vite" -WorkingDirectory $dir -PassThru -WindowStyle Minimized
+  return Start-Process -FilePath "npm" -ArgumentList (@("exec", "vite", "--") + $viteArgs) -WorkingDirectory $dir -PassThru -WindowStyle Minimized
 }
 
 function Save-Pids($backendPid, $frontendPids) {
@@ -146,9 +148,10 @@ Save-Pids $backendProc.Id $frontendPids
 
 Write-Host ""
 Write-Host "Done!" -ForegroundColor Green
-Write-Host "  nepm (admin):  http://localhost:5173"
-Write-Host "  nepg (grid):   http://localhost:5174"
-Write-Host "  nepv (screen): http://localhost:5175"
-Write-Host "  backend:       http://localhost:8080/api"
+Write-Host "  nepm (admin):      http://localhost:5173"
+Write-Host "  nepg (grid):       http://localhost:5174"
+Write-Host "  nepv (screen):     http://localhost:5175"
+Write-Host "  neps (supervisor): http://localhost:5176"
+Write-Host "  backend:           http://localhost:8080/api"
 Write-Host "  Stop:          stop.ps1 / stop.bat"
 Write-Host ""

@@ -15,6 +15,7 @@ public interface SupervisorFeedbackMapper {
     SupervisorFeedback findById(@Param("id") Integer id);
     List<SupervisorFeedback> findByGridMemberId(@Param("gridMemberId") Integer gridMemberId);
     List<SupervisorFeedback> findPendingByGridMemberId(@Param("gridMemberId") Integer gridMemberId);
+    List<SupervisorFeedback> findBySupervisorId(@Param("supervisorId") Integer supervisorId);
     int assign(@Param("id") Integer id, @Param("gridMemberId") Integer gridMemberId);
     int confirmWithMeasure(@Param("id") Integer id, @Param("confirmAqi") Integer confirmAqi,
                            @Param("confirmLevel") Integer confirmLevel,

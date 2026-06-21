@@ -57,6 +57,13 @@
         ORDER BY f.assign_time DESC
     </select>
 
+    <select id="findBySupervisorId" resultType="SupervisorFeedback">
+        SELECT <include refid="feedbackColumns"/>
+        <include refid="feedbackJoins"/>
+        WHERE f.supervisor_id = #{supervisorId}
+        ORDER BY f.create_time DESC
+    </select>
+
     <update id="assign">
         UPDATE supervisor_feedback
         SET grid_member_id = #{gridMemberId}, status = 1, assign_time = NOW()

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shixun.nepm.mapper.AqiLevelMapper">
+    <select id="findAll" resultType="AqiLevel">
+        SELECT id, level_name, min_value, max_value, color_code, health_impact, create_time
+        FROM aqi_level
+        ORDER BY id
+    </select>
+</mapper>

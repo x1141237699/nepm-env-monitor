@@ -43,6 +43,10 @@ public class FeedbackService {
         return feedbackMapper.findPendingByGridMemberId(gridMemberId);
     }
 
+    public List<SupervisorFeedback> listBySupervisor(Integer supervisorId) {
+        return feedbackMapper.findBySupervisorId(supervisorId);
+    }
+
     public SupervisorFeedback getTaskForGridMember(Integer afId, Integer gridMemberId) {
         SupervisorFeedback feedback = feedbackMapper.findById(afId);
         if (feedback == null || !gridMemberId.equals(feedback.getGridMemberId())) {
