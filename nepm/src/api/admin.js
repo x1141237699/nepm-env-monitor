@@ -5,21 +5,21 @@ export function adminLogin(data) {
 }
 
 export function getFeedbackPage(params) {
-  return request.get('/feedback', { params, meta: { authRole: 'admin' } })
+  return request.get('/feedback', { params })
 }
 
 export function getFeedbackDetail(afId) {
-  return request.get(`/feedback/${afId}`, { meta: { authRole: 'admin' } })
+  return request.get(`/feedback/${afId}`)
 }
 
 export function getLocalGridMembers(afId) {
-  return request.get(`/feedback/${afId}/assign/local`, { meta: { authRole: 'admin' } })
+  return request.get(`/feedback/${afId}/assign/local`)
 }
 
 export function getOtherProvinceGridMembers(afId) {
-  return request.get(`/feedback/${afId}/assign/other`, { meta: { authRole: 'admin' } })
+  return request.get(`/feedback/${afId}/assign/other`)
 }
 
 export function assignGridMember(afId, data) {
-  return request.post(`/feedback/${afId}/assign`, data, { meta: { authRole: 'admin' } })
+  return request.post(`/feedback/${afId}/assign`, data)
 }

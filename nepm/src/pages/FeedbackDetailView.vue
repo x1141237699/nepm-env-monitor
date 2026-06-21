@@ -92,7 +92,7 @@ import {
   getFeedbackDetail,
   getLocalGridMembers,
   getOtherProvinceGridMembers,
-} from '../../api/admin'
+} from '../api/admin'
 
 const route = useRoute()
 const router = useRouter()

@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-  NEPM - start backend and frontend
+  NEPM - start backend and all frontends
 .USAGE
   powershell -ExecutionPolicy Bypass -File .\start.ps1
 #>
@@ -9,8 +9,13 @@
 $ErrorActionPreference = "Stop"
 $Root = $PSScriptRoot
 $BackApiDir = Join-Path $Root "back-api"
-$NepmDir = Join-Path $Root "nepm"
 $PidFile = Join-Path $Root ".run\pids.json"
+
+$Frontends = @(
+  @{ Name = "nepm"; Dir = (Join-Path $Root "nepm"); Port = 5173 },
+  @{ Name = "nepg"; Dir = (Join-Path $Root "nepg"); Port = 5174 },
+  @{ Name = "nepv"; Dir = (Join-Path $Root "nepv"); Port = 5175 }
+)
 
 function Write-Info($msg) { Write-Host "[INFO] $msg" -ForegroundColor Cyan }
 function Write-Ok($msg) { Write-Host "[OK]   $msg" -ForegroundColor Green }
@@ -21,9 +26,7 @@ function Test-CommandExists($name) {
 }
 
 function Find-Maven {
-  if (Test-CommandExists "mvn") {
-    return (Get-Command "mvn").Source
-  }
+  if (Test-CommandExists "mvn") { return (Get-Command "mvn").Source }
   $patterns = @(
     "$env:USERPROFILE\.m2\wrapper\dists\apache-maven-*\*\apache-maven-*\bin\mvn.cmd",
     "$env:USERPROFILE\.m2\wrapper\dists\apache-maven-*\apache-maven-*\bin\mvn.cmd"
@@ -51,19 +54,38 @@ function Wait-ForUrl($url, $timeoutSec = 120) {
   return $false
 }
 
-function Save-Pids($backendPid, $frontendPid) {
+function Ensure-NpmInstall($dir, $name) {
+  if (-not (Test-Path (Join-Path $dir "node_modules"))) {
+    Write-Info "npm install in $name..."
+    Push-Location $dir
+    npm install
+    if ($LASTEXITCODE -ne 0) { Pop-Location; throw "npm install failed in $name" }
+    Pop-Location
+    Write-Ok "$name dependencies ready"
+  }
+}
+
+function Start-Frontend($dir, $port) {
+  $viteCmd = Join-Path $dir "node_modules\.bin\vite.cmd"
+  if (Test-Path $viteCmd) {
+    return Start-Process -FilePath $viteCmd -WorkingDirectory $dir -PassThru -WindowStyle Minimized
+  }
+  return Start-Process -FilePath "npm" -ArgumentList "exec", "vite" -WorkingDirectory $dir -PassThru -WindowStyle Minimized
+}
+
+function Save-Pids($backendPid, $frontendPids) {
   $dir = Split-Path $PidFile -Parent
   if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir | Out-Null }
   @{
     backendPid = $backendPid
-    frontendPid = $frontendPid
+    frontendPids = $frontendPids
     startedAt = (Get-Date).ToString("o")
   } | ConvertTo-Json | Set-Content -Path $PidFile -Encoding UTF8
 }
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Magenta
-Write-Host " NEPM - Start Backend and Frontend" -ForegroundColor Magenta
+Write-Host " NEPM - Start Backend and Frontends" -ForegroundColor Magenta
 Write-Host "========================================" -ForegroundColor Magenta
 Write-Host ""
 
@@ -80,22 +102,16 @@ if ($missing.Count -gt 0) {
   exit 1
 }
 
-if (Test-PortListening 8080) {
-  Write-Warn "Port 8080 is in use. Run stop.ps1 first."
-  exit 1
-}
-if (Test-PortListening 5173) {
-  Write-Warn "Port 5173 is in use. Run stop.ps1 first."
-  exit 1
+$ports = @(8080) + ($Frontends | ForEach-Object { $_.Port })
+foreach ($port in $ports) {
+  if (Test-PortListening $port) {
+    Write-Warn "Port $port is in use. Run stop.ps1 first."
+    exit 1
+  }
 }
 
-if (-not (Test-Path (Join-Path $NepmDir "node_modules"))) {
-  Write-Info "Running npm install..."
-  Push-Location $NepmDir
-  npm install
-  if ($LASTEXITCODE -ne 0) { Pop-Location; throw "npm install failed" }
-  Pop-Location
-  Write-Ok "npm install done"
+foreach ($fe in $Frontends) {
+  Ensure-NpmInstall $fe.Dir $fe.Name
 }
 
 Write-Info "Starting backend on 8080..."
@@ -109,30 +125,30 @@ if (Wait-ForUrl "http://localhost:8080/api/statistics/dashboard" 120) {
   Write-Warn "Backend timeout. Check MySQL and database init."
 }
 
-$viteCmd = Join-Path $NepmDir "node_modules\.bin\vite.cmd"
-if (-not (Test-Path $viteCmd)) { $viteCmd = "npx" }
-$viteArgs = if ($viteCmd -eq "npx") { @("vite") } else { @() }
-
-Write-Info "Starting frontend on 5173..."
-if ($viteCmd -eq "npx") {
-  $frontendProc = Start-Process -FilePath "npm" -ArgumentList "exec", "vite" -WorkingDirectory $NepmDir -PassThru -WindowStyle Minimized
-} else {
-  $frontendProc = Start-Process -FilePath $viteCmd -WorkingDirectory $NepmDir -PassThru -WindowStyle Minimized
-}
-Write-Ok "Frontend started (PID $($frontendProc.Id))"
-
-Write-Info "Waiting for frontend..."
-if (Wait-ForUrl "http://localhost:5173" 60) {
-  Write-Ok "Frontend ready: http://localhost:5173"
-} else {
-  Write-Warn "Frontend slow. Try http://localhost:5173 later."
+$frontendPids = @()
+foreach ($fe in $Frontends) {
+  Write-Info "Starting $($fe.Name) on $($fe.Port)..."
+  $proc = Start-Frontend $fe.Dir $fe.Port
+  $frontendPids += $proc.Id
+  Write-Ok "$($fe.Name) started (PID $($proc.Id))"
 }
 
-Save-Pids $backendProc.Id $frontendProc.Id
+Start-Sleep -Seconds 3
+foreach ($fe in $Frontends) {
+  if (Wait-ForUrl "http://localhost:$($fe.Port)" 30) {
+    Write-Ok "$($fe.Name) ready: http://localhost:$($fe.Port)"
+  } else {
+    Write-Warn "$($fe.Name) slow. Try http://localhost:$($fe.Port) later."
+  }
+}
+
+Save-Pids $backendProc.Id $frontendPids
 
 Write-Host ""
 Write-Host "Done!" -ForegroundColor Green
-Write-Host "  Frontend: http://localhost:5173"
-Write-Host "  Backend:  http://localhost:8080/api"
-Write-Host "  Stop:     stop.ps1 / stop.bat"
+Write-Host "  nepm (admin):  http://localhost:5173"
+Write-Host "  nepg (grid):   http://localhost:5174"
+Write-Host "  nepv (screen): http://localhost:5175"
+Write-Host "  backend:       http://localhost:8080/api"
+Write-Host "  Stop:          stop.ps1 / stop.bat"
 Write-Host ""

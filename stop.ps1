@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-  NEPM - stop backend and frontend
+  NEPM - stop backend and all frontends
 .USAGE
   powershell -ExecutionPolicy Bypass -File .\stop.ps1
 #>
@@ -48,6 +48,12 @@ if (Test-Path $PidFile) {
       Stop-Tree $pids.frontendPid
       Write-Ok "Stopped frontend (PID $($pids.frontendPid))"
     }
+    if ($pids.frontendPids) {
+      foreach ($fpid in $pids.frontendPids) {
+        Stop-Tree $fpid
+        Write-Ok "Stopped frontend (PID $fpid)"
+      }
+    }
     Remove-Item $PidFile -Force
   } catch {
     Write-Info "PID file invalid, stopping by port"
@@ -56,6 +62,8 @@ if (Test-Path $PidFile) {
 
 Stop-ByPort 8080
 Stop-ByPort 5173
+Stop-ByPort 5174
+Stop-ByPort 5175
 
 Write-Host ""
 Write-Host "Project stopped." -ForegroundColor Green
